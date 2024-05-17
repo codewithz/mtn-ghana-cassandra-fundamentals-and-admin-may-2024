@@ -1918,7 +1918,12 @@ Create a separate table to act as an "index table", organizing courses by tag
       course_id varchar,
       primary key (tag, course_id)
     );
+//
 
+Logged batches or atomic batches can be used to keep multiple tables in sync.
+Unlogged batches can be used when you are making updates to the same partition.
+
+//
 Add some tags to a course in the "courses" table, and the corresponding entries in the "course_tags" table in a batch
 
     begin batch
