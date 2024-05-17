@@ -21,3 +21,13 @@ Encryption and Security in Cassandra : https://www.youtube.com/watch?v=VK3sqh7Xx
 Presto with Cassandra  : https://www.youtube.com/watch?v=gCOjffU4Yd0&list=PL7zHIV62HuTC-mJCZNFXuRcQlXWwKxszU&index=13
 
 Audit in Cassandra: https://www.youtube.com/watch?v=6BbaGo-E1tE&list=PL7zHIV62HuTC-mJCZNFXuRcQlXWwKxszU&index=8
+
+-------------- Encryptions--------------
+
+Client to Node Encryption: https://docs.datastax.com/en/cassandra-oss/3.x/cassandra/configuration/secureSSLClientToNode.html
+
+Node to Node Encryption : https://docs.datastax.com/en/cassandra-oss/3.x/cassandra/configuration/secureSSLNodeToNode.html
+
+Tansparent Data Encryption: https://docs.datastax.com/eol/en/security/6.7/security/secEncryptEnable.html
+
+
