@@ -19,3 +19,5 @@ https://www.youtube.com/playlist?list=PL7zHIV62HuTC-mJCZNFXuRcQlXWwKxszU
 Encryption and Security in Cassandra : https://www.youtube.com/watch?v=VK3sqh7XxIU
 
 Presto with Cassandra  : https://www.youtube.com/watch?v=gCOjffU4Yd0&list=PL7zHIV62HuTC-mJCZNFXuRcQlXWwKxszU&index=13
+
+Audit in Cassandra: https://www.youtube.com/watch?v=6BbaGo-E1tE&list=PL7zHIV62HuTC-mJCZNFXuRcQlXWwKxszU&index=8
