@@ -14,4 +14,6 @@ https://www.youtube.com/watch?v=Uw1hez8Ry7c
 
 https://www.youtube.com/playlist?list=PL2g2h-wyI4SrHMlHBJVe_or_Ryek2THgQ
 
+https://www.youtube.com/playlist?list=PL7zHIV62HuTC-mJCZNFXuRcQlXWwKxszU
+
 Encryption and Security in Cassandra : https://www.youtube.com/watch?v=VK3sqh7XxIU
