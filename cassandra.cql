@@ -1335,5 +1335,181 @@ cqlsh:mtn_complex> select * from todo;
 cqlsh:mtn_complex>
 
 
+//------------ Backup and Restore---------------------
+
+wz@codewithz:~/Desktop/cassandra/apache-cassandra-4.0.12-bin/apache-cassandra-4.0.12$ bin/nodetool status
+Datacenter: datacenter1
+=======================
+Status=Up/Down
+|/ State=Normal/Leaving/Joining/Moving
+--  Address    Load        Tokens  Owns  Host ID                               Rack 
+UN  127.0.0.1  132.68 KiB  16      ?     dbc6ca80-d42c-44e9-8988-cfa0dcdcc22c  rack1
+
+Note: Non-system keyspaces don't have the same replication settings, effective ownership information is meaningless
+cwz@codewithz:~/Desktop/cassandra/apache-cassandra-4.0.12-bin/apache-cassandra-4.0.12$ bin/cqlsh
+Connected to Test Cluster at 127.0.0.1:9042
+[cqlsh 6.0.0 | Cassandra 4.0.12 | CQL spec 3.4.5 | Native protocol v5]
+Use HELP for help.
+cqlsh> create keyspace mtn with replication={'class':'SimpleStrategy','replication_factor':1}
+   ... ;
+cqlsh> use mtn;
+cqlsh:mtn> Create table employee (name varchar PRIMARY KEY);
+cqlsh:mtn> Insert into employee values ('Zartab');
+SyntaxException: line 1:21 no viable alternative at input 'values' (Insert into [employee] values...)
+cqlsh:mtn> Insert into employee (namne) values ('Zartab');
+InvalidRequest: Error from server: code=2200 [Invalid query] message="Undefined column name namne in table mtn.employee"
+cqlsh:mtn> Insert into employee (name) values ('Zartab');
+cqlsh:mtn> Insert into employee (name) values ('Daniel');
+cqlsh:mtn> Insert into employee (name) values ('Sameul');
+cqlsh:mtn> select * from employee;
+
+ name
+--------
+ Zartab
+ Daniel
+ Sameul
+
+(3 rows)
+cqlsh:mtn> exit
+cwz@codewithz:~/Desktop/cassandra/apache-cassandra-4.0.12-bin/apache-cassandra-4.0.12$ bin/nodetool help
+ 
+;
+^Ccwz@codewithz:~/Desktop/cassandra/apache-cassandra-4.0.12-bin/apache-cassandra-4.0.12$ bin/nodetool help
+usage: nodetool [(-u <username> | --username <username>)]
+        [(-h <host> | --host <host>)]
+        [(-pwf <passwordFilePath> | --password-file <passwordFilePath>)]
+        [(-pw <password> | --password <password>)] [(-p <port> | --port <port>)]
+        [(-pp | --print-port)] <command> [<args>]
+
+The most commonly used nodetool commands are:
+    assassinate                  Forcefully remove a dead node without re-replicating any data.  Use as a last resort if you cannot removenode
+    bootstrap                    Monitor/manage node's bootstrap process
+    cleanup                      Triggers the immediate cleanup of keys no longer belonging to a node. By default, clean all keyspaces
+    clearsnapshot                Remove the snapshot with the given name from the given keyspaces
+    clientstats                  Print information about connected clients
+    compact                      Force a (major) compaction on one or more tables or user-defined compaction on given SSTables
+    compactionhistory            Print history of compaction
+    compactionstats              Print statistics on compactions
+    decommission                 Decommission the *node I am connecting to*
+    describecluster              Print the name, snitch, partitioner and schema version of a cluster
+    describering                 Shows the token ranges info of a given keyspace
+    disableauditlog              Disable the audit log
+    disableautocompaction        Disable autocompaction for the given keyspace and table
+    disablebackup                Disable incremental backup
+    disablebinary                Disable native transport (binary protocol)
+    disablefullquerylog          Disable the full query log
+    disablegossip                Disable gossip (effectively marking the node down)
+    disablehandoff               Disable storing hinted handoffs
+    disablehintsfordc            Disable hints for a data center
+    disableoldprotocolversions   Disable old protocol versions
+    drain                        Drain the node (stop accepting writes and flush all tables)
+    enableauditlog               Enable the audit log
+    enableautocompaction         Enable autocompaction for the given keyspace and table
+    enablebackup                 Enable incremental backup
+    enablebinary                 Reenable native transport (binary protocol)
+    enablefullquerylog           Enable full query logging, defaults for the options are configured in cassandra.yaml
+    enablegossip                 Reenable gossip
+    enablehandoff                Reenable future hints storing on the current node
+    enablehintsfordc             Enable hints for a data center that was previsouly disabled
+    enableoldprotocolversions    Enable old protocol versions
+    failuredetector              Shows the failure detector information for the cluster
+    flush                        Flush one or more tables
+    garbagecollect               Remove deleted data from one or more tables
+    gcstats                      Print GC Statistics
+    getbatchlogreplaythrottle    Print batchlog replay throttle in KB/s. This is reduced proportionally to the number of nodes in the cluster.
+    getcompactionthreshold       Print min and max compaction thresholds for a given table
+    getcompactionthroughput      Print the MB/s throughput cap for compaction in the system
+    getconcurrency               Get maximum concurrency for processing stages
+    getconcurrentcompactors      Get the number of concurrent compactors in the system.
+    getconcurrentviewbuilders    Get the number of concurrent view builders in the system
+    getendpoints                 Print the end points that owns the key
+    getfullquerylog              print configuration of fql if enabled, otherwise the configuration reflected in cassandra.yaml
+    getinterdcstreamthroughput   Print the Mb/s throughput cap for inter-datacenter streaming in the system
+    getlogginglevels             Get the runtime logging levels
+    getmaxhintwindow             Print the max hint window in ms
+    getseeds                     Get the currently in use seed node IP list excluding the node IP
+    getsnapshotthrottle          Print the snapshot_links_per_second throttle for snapshot/clearsnapshot
+    getsstables                  Print the sstable filenames that own the key
+    getstreamthroughput          Print the Mb/s throughput cap for streaming in the system
+    gettimeout                   Print the timeout of the given type in ms
+    gettraceprobability          Print the current trace probability value
+    gossipinfo                   Shows the gossip information for the cluster
+    help                         Display help information
+    import                       Import new SSTables to the system
+    info                         Print node information (uptime, load, ...)
+    invalidatecountercache       Invalidate the counter cache
+    invalidatekeycache           Invalidate the key cache
+    invalidaterowcache           Invalidate the row cache
+    join                         Join the ring
+    listsnapshots                Lists all the snapshots along with the size on disk and true size. True size is the total size of all SSTables which are not backed up to disk. Size on disk is total size of the snapshot on disk. Total TrueDiskSpaceUsed does not make any SSTable deduplication.
+    move                         Move node on the token ring to a new token
+    netstats                     Print network information on provided host (connecting node by default)
+    pausehandoff                 Pause hints delivery process
+    profileload                  Low footprint profiling of activity for a period of time
+    proxyhistograms              Print statistic histograms for network operations
+    rangekeysample               Shows the sampled keys held across all keyspaces
+    rebuild                      Rebuild data by streaming from other nodes (similarly to bootstrap)
+    rebuild_index                A full rebuild of native secondary indexes for a given table
+    refresh                      Load newly placed SSTables to the system without restart
+    refreshsizeestimates         Refresh system.size_estimates
+    reloadlocalschema            Reload local node schema from system tables
+    reloadseeds                  Reload the seed node list from the seed node provider
+    reloadssl                    Signals Cassandra to reload SSL certificates
+    reloadtriggers               Reload trigger classes
+    relocatesstables             Relocates sstables to the correct disk
+    removenode                   Show status of current node removal, force completion of pending removal or remove provided ID
+    repair                       Repair one or more tables
+    repair_admin                 list and fail incremental repair sessions
+    replaybatchlog               Kick off batchlog replay and wait for finish
+    resetfullquerylog            Stop the full query log and clean files in the configured full query log directory from cassandra.yaml as well as JMX
+    resetlocalschema             Reset node's local schema and resync
+    resumehandoff                Resume hints delivery process
+    ring                         Print information about the token ring
+    scrub                        Scrub (rebuild sstables for) one or more tables
+    setbatchlogreplaythrottle    Set batchlog replay throttle in KB per second, or 0 to disable throttling. This will be reduced proportionally to the number of nodes in the cluster.
+    setcachecapacity             Set global key, row, and counter cache capacities (in MB units)
+    setcachekeystosave           Set number of keys saved by each cache for faster post-restart warmup. 0 to disable
+    setcompactionthreshold       Set min and max compaction thresholds for a given table
+    setcompactionthroughput      Set the MB/s throughput cap for compaction in the system, or 0 to disable throttling
+    setconcurrency               Set maximum concurrency for processing stage
+    setconcurrentcompactors      Set number of concurrent compactors in the system.
+    setconcurrentviewbuilders    Set the number of concurrent view builders in the system
+    sethintedhandoffthrottlekb   Set hinted handoff throttle in kb per second, per delivery thread.
+    setinterdcstreamthroughput   Set the Mb/s throughput cap for inter-datacenter streaming in the system, or 0 to disable throttling
+    setlogginglevel              Set the log level threshold for a given component or class. Will reset to the initial configuration if called with no parameters.
+    setmaxhintwindow             Set the specified max hint window in ms
+    setsnapshotthrottle          Set the snapshot_links_per_second cap for snapshot and clearsnapshot throttling
+    setstreamthroughput          Set the Mb/s throughput cap for streaming in the system, or 0 to disable throttling
+    settimeout                   Set the specified timeout in ms, or 0 to disable timeout
+    settraceprobability          Sets the probability for tracing any given request to value. 0 disables, 1 enables for all requests, 0 is the default
+    sjk                          Run commands of 'Swiss Java Knife'. Run 'nodetool sjk --help' for more information.
+    snapshot                     Take a snapshot of specified keyspaces or a snapshot of the specified table
+    status                       Print cluster information (state, load, IDs, ...)
+    statusautocompaction         status of autocompaction of the given keyspace and table
+    statusbackup                 Status of incremental backup
+    statusbinary                 Status of native transport (binary protocol)
+    statusgossip                 Status of gossip
+    statushandoff                Status of storing future hints on the current node
+    stop                         Stop compaction
+    stopdaemon                   Stop cassandra daemon
+    tablehistograms              Print statistic histograms for a given table
+    tablestats                   Print statistics on tables
+    toppartitions                Sample and print the most active partitions
+    tpstats                      Print usage statistics of thread pools
+    truncatehints                Truncate all hints on the local node, or truncate hints for the endpoint(s) specified.
+    upgradesstables              Rewrite sstables (for the requested tables) that are not on the current version (thus upgrading them to said current version)
+    verify                       Verify (check data checksum for) one or more tables
+    version                      Print cassandra version
+    viewbuildstatus              Show progress of a materialized view build
+
+See 'nodetool help <command>' for more information on a specific command.
+
+cwz@codewithz:~/Desktop/cassandra/apache-cassandra-4.0.12-bin/apache-cassandra-4.0.12$ sudo bin/nodetool snapshot mtn
+[sudo] password for cwz: 
+Requested creating snapshot(s) for [mtn] with snapshot name [1715941251695] and options {skipFlush=false}
+Snapshot directory: 1715941251695
+cwz@codewithz:~/Desktop/cassandra/apache-cassandra-4.0.12-bin/apache-cassandra-4.0.12$ 
+
+
 
 
