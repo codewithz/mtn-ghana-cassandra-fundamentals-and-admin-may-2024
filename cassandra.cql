@@ -1511,5 +1511,130 @@ Snapshot directory: 1715941251695
 cwz@codewithz:~/Desktop/cassandra/apache-cassandra-4.0.12-bin/apache-cassandra-4.0.12$ 
 
 
+-------------------- Backup Steps ---------------------
+
+wz@codewithz:~/Desktop/cassandra/apache-cassandra-4.0.12-bin/apache-cassandra-4.0.12$ bin/cqlsh
+Connected to Test Cluster at 127.0.0.1:9042
+[cqlsh 6.0.0 | Cassandra 4.0.12 | CQL spec 3.4.5 | Native protocol v5]
+Use HELP for help.
+cqlsh> create keyspace codewithz with replication={'replication_factor':1,'class':'SimpleStrategy'}
+   ... ;
+cqlsh> use codewithz;
+cqlsh:codewithz> create tabel employee (name varchar PRIMARY KEY);
+SyntaxException: line 1:7 no viable alternative at input 'tabel' ([create] tabel...)
+cqlsh:codewithz> create table employee (name varchar PRIMARY KEY);
+cqlsh:codewithz> insert into employee (name) values ('Tom');
+cqlsh:codewithz> insert into employee (name) values ('Alex');
+cqlsh:codewithz> insert into employee (name) values ('Mike');
+cqlsh:codewithz> insert into employee (name) values ('John');
+cqlsh:codewithz> select * from employee;
+
+ name
+------
+ Mike
+  Tom
+ John
+ Alex
+
+(4 rows)
+cqlsh:codewithz> exit;
+cwz@codewithz:~/Desktop/cassandra/apache-cassandra-4.0.12-bin/apache-cassandra-4.0.12$ bin/nodetool snapshot codewithz employee;
+Requested creating snapshot(s) for [codewithz, employee] with snapshot name [1715943908448] and options {skipFlush=false}
+nodetool: Keyspace employee does not exist
+See 'nodetool help' or 'nodetool help <command>'.
+cwz@codewithz:~/Desktop/cassandra/apache-cassandra-4.0.12-bin/apache-cassandra-4.0.12$ sudo bin/nodetool snapshot codewithz 
+[sudo] password for cwz: 
+Requested creating snapshot(s) for [codewithz] with snapshot name [1715944011972] and options {skipFlush=false}
+Snapshot directory: 1715944011972
+cwz@codewithz:~/Desktop/cassandra/apache-cassandra-4.0.12-bin/apache-cassandra-4.0.12$ bin/cqlsh
+Connected to Test Cluster at 127.0.0.1:9042
+[cqlsh 6.0.0 | Cassandra 4.0.12 | CQL spec 3.4.5 | Native protocol v5]
+Use HELP for help.
+cqlsh> use codewithz;
+cqlsh:codewithz> drop table employee;
+cqlsh:codewithz> exit;
+cwz@codewithz:~/Desktop/cassandra/apache-cassandra-4.0.12-bin/apache-cassandra-4.0.12$ 
+
+------------------ Restore Steps ----------------------------------
+
+1. Create the keyspace and the table
+
+cwz@codewithz:~/Desktop/cassandra/apache-cassandra-4.0.12-bin/apache-cassandra-4.0.12$ bin/cqlsh
+Connected to Test Cluster at 127.0.0.1:9042
+[cqlsh 6.0.0 | Cassandra 4.0.12 | CQL spec 3.4.5 | Native protocol v5]
+Use HELP for help.
+cqlsh> describe keyspaces;
+
+catalogkeyspace  cqlkeyspace1  system_auth         system_traces        
+codewithz        mtn           system_distributed  system_views         
+cqlkeyspace      system        system_schema       system_virtual_schema
+
+cqlsh> use codewithz;
+cqlsh:codewithz> CREATE TABLE IF NOT EXISTS codewithz.employee (
+             ...     name text PRIMARY KEY
+             ... ) WITH ID = 0d32d350-143d-11ef-a34e-85797f1213a1
+             ...     AND additional_write_policy = '99p'
+             ...     AND bloom_filter_fp_chance = 0.01
+             ...     AND caching = {'keys': 'ALL', 'rows_per_partition': 'NONE'}
+             ...     AND cdc = false
+             ...     AND comment = ''
+             ...     AND compaction = {'class': 'org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy', 'max_threshold': '32', 'min_threshold': '4'}
+             ...     AND compression = {'chunk_length_in_kb': '16', 'class': 'org.apache.cassandra.io.compress.LZ4Compressor'}
+             ...     AND crc_check_chance = 1.0
+             ...     AND default_time_to_live = 0
+             ...     AND extensions = {}
+             ...     AND gc_grace_seconds = 864000
+             ...     AND max_index_interval = 2048
+             ...     AND memtable_flush_period_in_ms = 0
+             ...     AND min_index_interval = 128
+             ...     AND read_repair = 'BLOCKING'
+             ...     AND speculative_retry = '99p';
+cqlsh:codewithz> describe tables;
+
+employee
+
+cqlsh:codewithz> select * from employee;
+
+ name
+------
+
+(0 rows)
+cqlsh:codewithz> exit;
+
+Go to snapshot directory where the old snapshot was stored 
+
+Come to the new table location where the new table is created. 
+
+All the files from snapshot directory should be copied to current table directory 
+
+nodetool refresh <keyspace> <table-name>
+
+
+
+
+cwz@codewithz:~/Desktop/cassandra/apache-cassandra-4.0.12-bin/apache-cassandra-4.0.12$ nodetool refresh codewithz employee;
+nodetool: command not found
+cwz@codewithz:~/Desktop/cassandra/apache-cassandra-4.0.12-bin/apache-cassandra-4.0.12$ bin/nodetool refresh codewithz employee;
+nodetool refresh is deprecated, use nodetool import instead
+cwz@codewithz:~/Desktop/cassandra/apache-cassandra-4.0.12-bin/apache-cassandra-4.0.12$ bin/cqlsh
+Connected to Test Cluster at 127.0.0.1:9042
+[cqlsh 6.0.0 | Cassandra 4.0.12 | CQL spec 3.4.5 | Native protocol v5]
+Use HELP for help.
+cqlsh> use codewithz;
+cqlsh:codewithz> select * from employee;
+
+ name
+------
+ Mike
+  Tom
+ John
+ Alex
+
+(4 rows)
+cqlsh:codewithz> 
+
+
+
+
 
 
