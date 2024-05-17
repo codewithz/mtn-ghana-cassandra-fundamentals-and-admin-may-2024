@@ -28,6 +28,6 @@ Client to Node Encryption: https://docs.datastax.com/en/cassandra-oss/3.x/cassan
 
 Node to Node Encryption : https://docs.datastax.com/en/cassandra-oss/3.x/cassandra/configuration/secureSSLNodeToNode.html
 
-Tansparent Data Encryption: https://docs.datastax.com/eol/en/security/6.7/security/secEncryptEnable.html
+Transparent Data Encryption: https://docs.datastax.com/eol/en/security/6.7/security/secEncryptEnable.html
 
 
